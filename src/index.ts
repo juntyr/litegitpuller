@@ -3,8 +3,11 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { PathExt, URLExt } from '@jupyterlab/coreutils';
-import { IDefaultFileBrowser } from '@jupyterlab/filebrowser';
-import { ServerConnection } from '@jupyterlab/services';
+import {
+  Contents,
+  IDefaultDrive,
+  ServerConnection
+} from '@jupyterlab/services';
 import { GitPuller, GithubPuller, GitlabPuller } from './gitpuller';
 
 /**
@@ -36,11 +39,8 @@ export async function testNbGitPuller(): Promise<boolean> {
 const gitPullerExtension: JupyterFrontEndPlugin<void> = {
   id: '@jupyterlite/litegitpuller:plugin',
   autoStart: true,
-  requires: [IDefaultFileBrowser],
-  activate: async (
-    app: JupyterFrontEnd,
-    defaultFileBrowser: IDefaultFileBrowser
-  ) => {
+  requires: [IDefaultDrive],
+  activate: async (app: JupyterFrontEnd, drive: Contents.IDrive) => {
     if (await testNbGitPuller()) {
       console.log(
         '@jupyterlite/litegitpuller is not activated, to avoid conflict with nbgitpuller'
@@ -79,8 +79,7 @@ const gitPullerExtension: JupyterFrontEndPlugin<void> = {
       repoUrl.hostname = 'api.github.com';
       repoUrl.pathname = `/repos${repoUrl.pathname}`;
       puller = new GithubPuller({
-        defaultFileBrowser: defaultFileBrowser,
-        contents: app.serviceManager.contents
+        drive: drive
       });
     } else if (provider === 'gitlab') {
       // Gitlab needs the repo path to be encoded.
@@ -88,8 +87,7 @@ const gitPullerExtension: JupyterFrontEndPlugin<void> = {
         repoUrl.pathname.slice(1)
       )}`;
       puller = new GitlabPuller({
-        defaultFileBrowser: defaultFileBrowser,
-        contents: app.serviceManager.contents
+        drive: drive
       });
     }
 

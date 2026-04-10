@@ -1,5 +1,4 @@
 import { PathExt } from '@jupyterlab/coreutils';
-import { IDefaultFileBrowser } from '@jupyterlab/filebrowser';
 import { Contents } from '@jupyterlab/services';
 
 /**
@@ -10,8 +9,7 @@ export abstract class GitPuller {
    * The constructor for the GitPuller abstract class.
    */
   constructor(options: GitPuller.IOptions) {
-    this._defaultFileBrowser = options.defaultFileBrowser;
-    this._contents = options.contents;
+    this._drive = options.drive;
   }
 
   /**
@@ -45,7 +43,7 @@ export abstract class GitPuller {
         // Upload missing files.
         const fileContent = await this.getFile(url, file, branch);
 
-        await this.createFile(filePath, fileContent.blob, fileContent.type);
+        await this.createFile(filePath, fileContent.blob);
       }
     });
 
@@ -103,12 +101,10 @@ export abstract class GitPuller {
         path: PathExt.dirname(directory)
       };
       // Create directory if it does not exist.
-      await this._contents
-        .get(directory, { content: false })
-        .catch(async () => {
-          const newDirectory = await this._contents.newUntitled(options);
-          await this._contents.rename(newDirectory.path, directory);
-        });
+      await this._drive.get(directory, { content: false }).catch(async () => {
+        const newDirectory = await this._drive.newUntitled(options);
+        await this._drive.rename(newDirectory.path, directory);
+      });
     }
   }
 
@@ -118,7 +114,7 @@ export abstract class GitPuller {
    * @param filePath - the file to check.
    */
   protected async fileExists(filePath: string): Promise<boolean> {
-    return this._contents
+    return this._drive
       .get(filePath, { content: false })
       .then(() => true)
       .catch(() => false);
@@ -131,11 +127,7 @@ export abstract class GitPuller {
    * @param blob - the file content.
    * @param type - the file type.
    */
-  protected async createFile(
-    filePath: string,
-    blob: Blob,
-    type: string
-  ): Promise<void> {
+  protected async createFile(filePath: string, blob: Blob): Promise<void> {
     let filename = PathExt.basename(filePath);
     let inc = 0;
     let uniqueFilename = false;
@@ -143,7 +135,7 @@ export abstract class GitPuller {
     // The file must be first created at root path and then moved to its final path.
     // Let's ensure an other file with the same name does not exists at root.
     while (!uniqueFilename) {
-      await this._contents
+      await this._drive
         .get(filename, { content: false })
         .then(() => {
           filename = `${inc}_${filename}`;
@@ -154,12 +146,23 @@ export abstract class GitPuller {
         });
     }
 
-    const file = new File([blob], filename, { type });
-    await this._defaultFileBrowser.model.upload(file).then(async model => {
-      if (!(model.path === filePath)) {
-        await this._contents.rename(model.path, filePath);
-      }
+    const ext = PathExt.extname(filePath);
+
+    const newFile = await this._drive.newUntitled({
+      type: (ext === '.ipynb' ? 'notebook' : 'file') as Contents.ContentType,
+      path: PathExt.dirname(filePath),
+      ext: ext
     });
+    await this._drive.save(newFile.path, {
+      content:
+        newFile.format === 'json'
+          ? JSON.parse(await blob.text())
+          : newFile.format === 'text'
+            ? await blob.text()
+            : await blobToBase64(blob),
+      size: blob.size
+    });
+    await this._drive.rename(newFile.path, filePath);
   }
 
   /**
@@ -174,8 +177,26 @@ export abstract class GitPuller {
   }
 
   protected _errors = new Map<string, string[]>();
-  protected _defaultFileBrowser: IDefaultFileBrowser;
-  protected _contents: Contents.IManager;
+  protected _drive: Contents.IDrive;
+}
+
+/**
+ * Convert a blob to a base64 string.
+ *
+ * Adopted from https://stackoverflow.com/a/61226119.
+ *
+ * @param blob - the blob to convert.
+ */
+function blobToBase64(blob: Blob): Promise<string> {
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  return new Promise(resolve => {
+    reader.onloadend = () => {
+      // @ts-expect-error: readAsDataURL provides a string result
+      const result: string = reader.result;
+      resolve(result.slice('data:*/*;base64,'.length));
+    };
+  });
 }
 
 /**
@@ -186,8 +207,7 @@ export namespace GitPuller {
    * The constructor options for the constructor.
    */
   export interface IOptions {
-    defaultFileBrowser: IDefaultFileBrowser;
-    contents: Contents.IManager;
+    drive: Contents.IDrive;
   }
 
   /**
@@ -203,7 +223,6 @@ export namespace GitPuller {
    */
   export interface IFile {
     blob: Blob;
-    type: string;
   }
 
   /**
@@ -275,9 +294,8 @@ export class GithubPuller extends GitPuller {
 
     const resp = await fetch(downloadUrl);
     const blob = await resp.blob();
-    const type = resp.headers.get('Content-Type') ?? '';
 
-    return { blob, type };
+    return { blob };
   }
 }
 
@@ -328,8 +346,7 @@ export class GitlabPuller extends GitPuller {
 
     const resp = await fetch(fetchUrl);
     const blob = await resp.blob();
-    const type = resp.headers.get('Content-Type') ?? '';
 
-    return { blob, type };
+    return { blob };
   }
 }
