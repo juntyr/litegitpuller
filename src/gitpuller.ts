@@ -269,7 +269,9 @@ export class GitlabPuller extends GitPuller {
   ): AsyncIterable<GitPuller.IFile | GitPuller.IDirectory> {
     // https://<HOST>/<USER>/<REPO>/-/archive/<BRANCH>/<REPO>-<BRANCH>.zip?ref_type=heads
     const userRepo = new URL(url).pathname.split('/');
-    const fetchUrl = `${url}/-/archive/${branch}/${userRepo[userRepo.length - 1]}-${branch}.zip?ref_type=heads`;
+    const fetchUrl = `${url}/-/archive/${branch}/${
+      userRepo[userRepo.length - 1]
+    }-${branch}.zip?ref_type=heads`;
 
     const archive = await fetch(fetchUrl);
 
