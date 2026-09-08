@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0.3.2"]
+requires = ["hatchling>=1.5.0", "jupyter-builder>=1.2.2", "hatch-nodejs-version>=0.3.2"]
 build-backend = "hatchling.build"
 
 [project]
@@ -29,7 +29,6 @@ dynamic = ["version", "description", "authors", "urls", "keywords"]
 [project.optional-dependencies]
 docs = [
     "jupyterlite-sphinx>=0.9.3",
-    "jupyterlite-xeus-python>=0.9.0,<0.10.0",
     "myst-parser",
     "pydata_sphinx_theme",
     "sphinx>=4"
