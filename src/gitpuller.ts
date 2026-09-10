@@ -194,7 +194,8 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.onloadend = () => {
       // @ts-expect-error: readAsDataURL provides a string result
       const result: string = reader.result;
-      resolve(result.slice('data:*/*;base64,'.length));
+      // remove the "data:*/*;base64," prefix, independent of the media type
+      resolve(dataUrl.split(',')[1]);
     };
   });
 }
