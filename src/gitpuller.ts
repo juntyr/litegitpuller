@@ -188,14 +188,23 @@ export abstract class GitPuller {
  * @param blob - the blob to convert.
  */
 function blobToBase64(blob: Blob): Promise<string> {
+  // TODO: the following is possible with baseline 2026
+  //       await blob.bytes().toBase64()
   const reader = new FileReader();
   reader.readAsDataURL(blob);
   return new Promise(resolve => {
     reader.onloadend = () => {
       // @ts-expect-error: readAsDataURL provides a string result
       const result: string = reader.result;
-      // remove the "data:*/*;base64," prefix, independent of the media type
-      resolve(result.split(',')[1]);
+      // remove the "data:[<media-type>][;base64]," prefix
+      const [format, data] = result.split(',');
+      if (format.endsWith(';base64')) {
+        // already base64 encoded
+        resolve(data);
+      } else {
+        // text using percent-encoding, base64 encode it first
+        resolve(btoa(decodeURIComponent(data)));
+      }
     };
   });
 }
