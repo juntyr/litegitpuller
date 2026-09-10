@@ -160,6 +160,7 @@ export abstract class GitPuller {
           : newFile.format === 'text'
             ? await blob.text()
             : await blobToBase64(blob),
+      format: newFile.format,
       size: blob.size
     });
     await this._drive.rename(newFile.path, filePath);
