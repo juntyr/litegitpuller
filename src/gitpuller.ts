@@ -155,13 +155,14 @@ export abstract class GitPuller {
     });
     await this._drive.save(newFile.path, {
       content:
-        newFile.format === 'json'
+        newFile.format === 'json' || newFile.type === 'notebook'
           ? JSON.parse(await blob.text())
           : newFile.format === 'text'
             ? await blob.text()
             : await blobToBase64(blob),
-      format: newFile.format,
-      size: blob.size
+      format: newFile.format ?? 'base64,
+      size: blob.size,
+      type: newFile.type
     });
     await this._drive.rename(newFile.path, filePath);
   }
