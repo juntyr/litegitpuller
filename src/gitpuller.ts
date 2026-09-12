@@ -160,7 +160,7 @@ export abstract class GitPuller {
           : newFile.format === 'text'
             ? await blob.text()
             : await blobToBase64(blob),
-      format: newFile.format ?? 'base64,
+      format: newFile.format ?? 'base64',
       size: blob.size,
       type: newFile.type
     });
