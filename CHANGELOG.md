@@ -2,6 +2,33 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.3.1
+
+([Full Changelog](https://github.com/jupyterlite/litegitpuller/compare/v0.3.0...472b6bc07e0c09671b561baed12182bfe394d833))
+
+### Bugs fixed
+
+- Use IDrive instead of file browser [#29](https://github.com/jupyterlite/litegitpuller/pull/29) ([@juntyr](https://github.com/juntyr), [@brichet](https://github.com/brichet), [@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Bump github actions to latest stable versions [#32](https://github.com/jupyterlite/litegitpuller/pull/32) ([@brichet](https://github.com/brichet))
+
+### Documentation improvements
+
+- Bump dependencies in package, UI tests and RTD [#33](https://github.com/jupyterlite/litegitpuller/pull/33) ([@brichet](https://github.com/brichet))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/litegitpuller/graphs/contributors?from=2024-11-25&to=2026-09-15&type=c))
+
+@brichet ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Abrichet+updated%3A2024-11-25..2026-09-15&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Ajtpio+updated%3A2024-11-25..2026-09-15&type=Issues)) | @juntyr ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Ajuntyr+updated%3A2024-11-25..2026-09-15&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.3.0
 
 ([Full Changelog](https://github.com/jupyterlite/litegitpuller/compare/v0.2.1...6d326045b01e6e239aff4730bc97d13a376bf5a1))
@@ -19,8 +46,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/litegitpuller/graphs/contributors?from=2024-10-02&to=2024-11-25&type=c))
 
 [@brichet](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Abrichet+updated%3A2024-10-02..2024-11-25&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Agithub-actions+updated%3A2024-10-02..2024-11-25&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Ajtpio+updated%3A2024-10-02..2024-11-25&type=Issues) | [@juntyr](https://github.com/search?q=repo%3Ajupyterlite%2Flitegitpuller+involves%3Ajuntyr+updated%3A2024-10-02..2024-11-25&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.1
 
